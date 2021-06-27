@@ -1,5 +1,7 @@
 //import inquirer package to gather command line information
 const inquirer = require('inquirer');
+//import mysql helper classes
+const dbClasses = require('./Assets/dbClasses');
 
 /*   
     * Add departments, roles, employees

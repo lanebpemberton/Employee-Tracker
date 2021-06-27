@@ -40,7 +40,8 @@ class Department {
 
     async viewAllDepartments()
     {
-        
+        //view all departments in mysql
+
     }
 }
 
@@ -131,5 +132,13 @@ class Employee extends Role {
     {
         //return all employees in mysql
 
+        //return array of objects
+
     }
+}
+
+module.exports = {
+    "Department": Department, 
+    "Role": Role,
+    "Employee": Employee
 }
