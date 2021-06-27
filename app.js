@@ -2,6 +2,8 @@
 const inquirer = require('inquirer');
 //import mysql helper classes
 const dbClasses = require('./Assets/dbClasses');
+//import console table
+const cTable = require('console.table');
 
 /*   
     * Add departments, roles, employees
@@ -51,8 +53,10 @@ async function displayCMSOptions()
 
 async function viewEmployees()
 {
-    //print employees to console
-
+    //get employees array
+    let employees = dbClasses.Employee().viewEmployees();
+    //use console table to print contents of employees
+    console.table(employees);
 }
 
 async function createEmployee()
