@@ -49,19 +49,46 @@ async function displayCMSOptions()
             ]
         }
     ]);
+
+    //evaluate answers
+    if(answers.cmsOptions.toUpper() === "VIEW ALL EMPLOYEES")
+    {
+        viewEmployees();
+    }
 }
 
 async function viewEmployees()
 {
     //get employees array
-    let employees = dbClasses.Employee().viewEmployees();
+    let employees = await dbClasses.Employee().viewAllEmployees();
     //use console table to print contents of employees
     console.table(employees);
 }
 
 async function createEmployee()
 {
-
+    //setup questions as an array of objects
+    let questions = [{
+        name:"firstName",
+        type:"input",
+        message: "Employee first name",
+    },
+    {
+        name:"lastName",
+        type:"input",
+        message: "Employee last name",
+    }];
+    //get all roles as an array
+    let roles = await dbClasses.Role().viewAllRoles();
+    //push roles to questions array
+    questions.push({
+        name:"roles",
+        type:"list",
+        message: "Assign employee role",
+        choices: roles
+    })
+    let answers = await inquirer.prompt(questions);
+    let employee = dbClasses.Employee()
 }
 
 async function deleteEmployee()
