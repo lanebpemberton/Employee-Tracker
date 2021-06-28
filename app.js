@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const dbClasses = require('./Assets/dbClasses');
 //import console table
 const cTable = require('console.table');
+const { createPromptModule } = require('inquirer');
 
 /*   
     * Add departments, roles, employees
@@ -57,9 +58,22 @@ async function displayCMSOptions()
     }else if(answers.cmsOptions.toUpper() === "CREATE EMPLOYEE")
     {
         createEmployee();
+    }else if(answers.cmsOptions.toUpper() === "VIEW ALL ROLES")
+    {
+        viewRoles();
+    }else if(answers.cmsOptions.toUpper() === "CREATE ROLE")
+    {
+        createRole();
+    }else if(answers.cmsOptions.toUpper() === "VIEW ALL DEPARTMENTS")
+    {
+        viewDepartments();
+    }else if(answers.cmsOptions.toUpper() === "CREATE DEPARTMENT")
+    {
+        createDepartment();
     }
 }
 
+//EMPLOYEES
 async function viewEmployees()
 {
     //get employees array
@@ -70,9 +84,9 @@ async function viewEmployees()
     displayCMSOptions();
 }
 
-function roleObjectToRoleString()
+function roleObjectToRoleString(object)
 {
-
+    return object.title;
 }
 
 function returnMatchingRoleID(role, roles)
@@ -137,6 +151,95 @@ async function updateEmployeeRole()
     
 }
 
+//ROLES
+async function viewRoles()
+{
+    //get roles array
+    let roles = await dbClasses.Role().viewAllRoles();
+    //use console table to print all contents
+    console.table(roles);
+    //redisplay main cms options after printing contents
+    displayCMSOptions();
+}
 
+function departmentObjectToDepartmentString(object)
+{
+    return object.designation;
+}
 
+function returnMatchingDepartmentID(designation, departments)
+{
+    for(let a = 0;a<departments.length;a++)
+    {
+        if(designation === departments[a].designation)
+        {
+            //if role was round return id and finish looping
+            return departments[a].id;
+        }
+    }
+}
+
+async function createRole()
+{
+    //setup questions as an array of objects
+    let questions = [{
+        name:"title",
+        type:"input",
+        message: "Role title",
+    },
+    {
+        name:"salary",
+        type:"input",
+        message: "Role salary",
+    }];
+    //get all departments as an array
+    let departments = await dbClasses.Department().viewAllDepartments();
+    //call map function to create array of strings that are designations
+    let designations = departments.map(departmentObjectToDepartmentString);
+    console.log(JSON.stringify(designations));
+    //push roles to questions array
+    questions.push({
+        name:"designation",
+        type:"list",
+        message: "Assign role to department",
+        choices: designations
+    })
+    //present questions to user
+    let answers = await inquirer.prompt(questions);
+    //get department id from answers
+    let departmentID = returnMatchingDepartmentID(answers.designation,departments);
+    //create instance of role
+    let role = dbClasses.Role(null,answers.title,answers.salary,departmentID);
+    //use instane of employee to create new employee record
+    role.createRole();
+}
+
+//DEPARTMENTS
+async function viewDepartments()
+{
+    //get departments array
+    let departments = await dbClasses.Department().viewAllDepartments();
+    //use console table to print contents of departments
+    console.table(departments);
+    //redisplay main cms options after displaying all departments
+    displayCMSOptions();
+}
+
+async function createDepartment()
+{
+    //setup questions as an array of objects
+    let questions = [{
+        name:"designation",
+        type:"input",
+        message: "Department name",
+    }];
+    //present questions to user
+    let answers = await inquirer.prompt(questions);
+    //create instance of department
+    let department = dbClasses.Department(null,answers.designation);
+    //use instane of employee to create new employee record
+    department.createDepartment();
+}
+
+//on start display the main options
 displayCMSOptions();
