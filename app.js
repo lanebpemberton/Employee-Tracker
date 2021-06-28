@@ -4,8 +4,6 @@ const inquirer = require('inquirer');
 const dbClasses = require('./Assets/dbClasses');
 //import console table
 const cTable = require('console.table');
-const { createPromptModule } = require('inquirer');
-
 /*   
     * Add departments, roles, employees
 
@@ -52,7 +50,7 @@ async function displayCMSOptions()
     ]);
 
     //evaluate answers
-    if(answers.cmsOptions.toUpper() === "VIEW ALL EMPLOYEES")
+    /*if(answers.cmsOptions.toUpper() === "VIEW ALL EMPLOYEES")
     {
         viewEmployees();
     }else if(answers.cmsOptions.toUpper() === "CREATE EMPLOYEE")
@@ -70,7 +68,7 @@ async function displayCMSOptions()
     }else if(answers.cmsOptions.toUpper() === "CREATE DEPARTMENT")
     {
         createDepartment();
-    }
+    }*/
 }
 
 //EMPLOYEES
@@ -241,5 +239,5 @@ async function createDepartment()
     department.createDepartment();
 }
 
-//on start display the main options
-displayCMSOptions();
+//on start display the main  options
+//displayCMSOptions();

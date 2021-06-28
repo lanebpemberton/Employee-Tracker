@@ -1,3 +1,13 @@
+//import mysql
+const mysql = require('mysql2');
+// create the connection to database
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    database: 'cms',
+    password: 'yolane13'
+});
+
 class Department {
     constructor(id, designation)
     {
