@@ -65,6 +65,23 @@ async function viewEmployees()
     console.table(employees);
 }
 
+function roleObjectToRoleString()
+{
+
+}
+
+function returnMatchingRoleID(role, roles)
+{
+    for(let a = 0;a<roles.length;a++)
+    {
+        if(role === roles[a].title)
+        {
+            //if role was round return id and finish looping
+            return roles[a].id;
+        }
+    }
+}
+
 async function createEmployee()
 {
     //setup questions as an array of objects
@@ -80,15 +97,22 @@ async function createEmployee()
     }];
     //get all roles as an array
     let roles = await dbClasses.Role().viewAllRoles();
+    //call map function to create array of strings that are role titles
+    let roleTitles = roles.map(roleObjectToRoleString);
+    console.log(JSON.stringify(roleTitles));
     //push roles to questions array
     questions.push({
-        name:"roles",
+        name:"role",
         type:"list",
         message: "Assign employee role",
-        choices: roles
+        choices: roleTitles
     })
+    //present questions to user
     let answers = await inquirer.prompt(questions);
-    let employee = dbClasses.Employee()
+    //get role id from answers
+    let roleID = returnMatchingRoleID(answers.role,roles);
+    let employee = dbClasses.Employee(null,answers.firstName,answers.lastName,roleID);
+    employee.createEmployee();
 }
 
 async function deleteEmployee()
