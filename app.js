@@ -54,6 +54,9 @@ async function displayCMSOptions()
     if(answers.cmsOptions.toUpper() === "VIEW ALL EMPLOYEES")
     {
         viewEmployees();
+    }else if(answers.cmsOptions.toUpper() === "CREATE EMPLOYEE")
+    {
+        createEmployee();
     }
 }
 
@@ -63,6 +66,8 @@ async function viewEmployees()
     let employees = await dbClasses.Employee().viewAllEmployees();
     //use console table to print contents of employees
     console.table(employees);
+    //redisplay main cms options after displaying all employees
+    displayCMSOptions();
 }
 
 function roleObjectToRoleString()
@@ -111,7 +116,9 @@ async function createEmployee()
     let answers = await inquirer.prompt(questions);
     //get role id from answers
     let roleID = returnMatchingRoleID(answers.role,roles);
+    //create instance of employee
     let employee = dbClasses.Employee(null,answers.firstName,answers.lastName,roleID);
+    //use instane of employee to create new employee record
     employee.createEmployee();
 }
 
