@@ -51,7 +51,6 @@ async function displayCMSOptions()
             ]
         }
     ]);
-    console.log(answers);
     //evaluate answers
     if(answers.cmsOptions.toUpperCase() === "VIEW ALL EMPLOYEES")
     {
@@ -132,7 +131,6 @@ async function createEmployee()
     let roles = await dbClasses.Role().viewAllRoles();
     //call map function to create array of strings that are role titles
     let roleTitles = roles.map(roleObjectToRoleString);
-    console.log(JSON.stringify(roleTitles));
     //push roles to questions array
     questions.push({
         name:"role",
@@ -210,7 +208,6 @@ async function createRole()
     let departments = await dbClasses.Department().viewAllDepartments();
     //call map function to create array of strings that are designations
     let designations = departments.map(departmentObjectToDepartmentString);
-    console.log(JSON.stringify(designations));
     //push roles to questions array
     questions.push({
         name:"designation",
@@ -263,7 +260,27 @@ async function createDepartment()
 
 async function deleteDepartment()
 {
-
+    let department = new dbClasses.Department(null,null,connection);
+    //get departments to list
+    let departments = await department.viewAllDepartments();
+    //setup questions to show user
+    let chooseDepartmentQuestion = [
+        {
+            name:"department",
+            type: "list",
+            message: "Choose a department to delete",
+            choices: departments
+        }
+    ]; 
+    //get answer from user
+    let departmentAnswer = await inquirer.prompt(chooseDepartmentQuestion);
+    //get whole object of chosen answer from initial list
+    let departmentSelected = departments.filter(returnIDFromArray,departmentAnswer.department)[0];
+    //write result to delete department
+    await department.deleteDepartment(departmentSelected.id);
+    console.log(`Department '${departmentSelected.name}' deleted successfully!`);
+    //take user back to main menu
+    displayCMSOptions();
 }
 
 async function updateDepartment()

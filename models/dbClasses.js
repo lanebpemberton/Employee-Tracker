@@ -35,18 +35,16 @@ class Department {
         const [rows] = await this.connection.execute(`INSERT INTO ${this.tableName} (name) VALUES ('${this.designation}');`);
     }
 
-    async deleteDepartment()
+    async deleteDepartment(id)
     {
         //delete department in mysql
-
+        await this.connection.execute(`DELETE FROM ${this.tableName} WHERE id = '${id}'`)
     }
 
     async updateDepartment(designation, id)
     {
-        console.log(id);
         //update department in mysql
-        let [rows] = await this.connection.execute(`UPDATE ${this.tableName} SET name = '${designation}' WHERE id = '${id}'`)
-        console.log(rows);
+        let [rows] = await this.connection.execute(`UPDATE ${this.tableName} SET name = '${designation}' WHERE id = '${id}'`);
     }
 
     async viewAllDepartments()
