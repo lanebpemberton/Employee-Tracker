@@ -25,7 +25,6 @@ class Department {
             'SELECT * FROM `table` WHERE `name` = "Page" AND `age` > 45',
             function(err, results, fields) {
               console.log(results); // results contains rows returned by server
-              console.log(fields); // fields contains extra meta data about results, if available
             }
           );
     }
@@ -33,8 +32,8 @@ class Department {
     async createDepartment()
     {
         //create department in mysql
-
-        //the result of that function will set this object's id
+        const [rows] = await this.connection.execute(`INSERT INTO ${this.tableName} (name) VALUES ('${this.designation}');`);
+        console.log(rows);
     }
 
     async deleteDepartment()
@@ -52,16 +51,13 @@ class Department {
     {
         //view all departments in mysql
         //use id to retireve rest of department values from mysql
-        const [rows, fields] = await connection.execute(`SELECT * FROM \`${this.tableName}\``);
-        console.log(rows);
+        const [rows, fields] = await this.connection.execute(`SELECT * FROM \`${this.tableName}\``);
+        return rows;
     }
 
     async seedDepartment()
     {
-       let queryResult = this.connection.query(`CREATE TABLE ${this.tableName} (name VARCHAR(50),id int NOT NULL AUTO_INCREMENT);`,function(error,results,fields)
-       {
-            console.log(results);
-       });
+       await this.connection.execute(`CREATE TABLE ${this.tableName} (name VARCHAR(50),id INT AUTO_INCREMENT PRIMARY KEY);`);
     }
 }
 

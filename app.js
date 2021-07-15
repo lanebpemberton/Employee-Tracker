@@ -5,7 +5,9 @@ const dbClasses = require('./models/dbClasses');
 //import console table
 const cTable = require('console.table');
 //import connection
-const connection = require('./config/connection');
+const mysqlConnection = require('./config/connection');
+//setup global connection variable
+let connection = null;
 /*   
     * Add departments, roles, employees
 
@@ -239,10 +241,19 @@ async function createDepartment()
     let answers = await inquirer.prompt(questions);
     //create instance of department
     let department = new dbClasses.Department(null,answers.designation,connection);
-    //use instane of employee to create new employee record
-    // department.createDepartment();
-    department.seedDepartment();
+    //use instance of employee to create new employee record
+    department.createDepartment();
+    //tell the user department was created successfully
+    console.log(`Department '${answers.designation}' created successfully!`);
+    //point the user back to main options
+    displayCMSOptions();
 }
 
 //on start setup connection and display the main options
-displayCMSOptions();
+async function startApp()
+{
+    connection = await mysqlConnection.setup();
+    displayCMSOptions();
+}
+
+startApp();
