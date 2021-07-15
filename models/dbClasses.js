@@ -1,18 +1,12 @@
-//import mysql
-const mysql = require('mysql2');
-// create the connection to database
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'cms',
-    password: 'yolane13'
-});
+const { connect } = require("../config/connection");
 
 class Department {
-    constructor(id, designation)
+    constructor(id, designation, connection)
     {
         this.id = id;
         this.designation = designation;
+        this.connection = connection;
+        this.tableName = "department";
         //soft id evaluation
         if(this.id !== null)
         {
@@ -27,7 +21,13 @@ class Department {
     async getDepartment()
     {
         //use id to retireve rest of department values from mysql
-
+        connection.query(
+            'SELECT * FROM `table` WHERE `name` = "Page" AND `age` > 45',
+            function(err, results, fields) {
+              console.log(results); // results contains rows returned by server
+              console.log(fields); // fields contains extra meta data about results, if available
+            }
+          );
     }
 
     async createDepartment()
@@ -51,12 +51,22 @@ class Department {
     async viewAllDepartments()
     {
         //view all departments in mysql
+        //use id to retireve rest of department values from mysql
+        const [rows, fields] = await connection.execute(`SELECT * FROM \`${this.tableName}\``);
+        console.log(rows);
+    }
 
+    async seedDepartment()
+    {
+       let queryResult = this.connection.query(`CREATE TABLE ${this.tableName} (name VARCHAR(50),id int NOT NULL AUTO_INCREMENT);`,function(error,results,fields)
+       {
+            console.log(results);
+       });
     }
 }
 
 class Role extends Department {
-    constructor(id, title, salary, department_id)
+    constructor(id, title, salary, department_id, connection)
     {
         //initialize department
         super(department_id);
@@ -65,6 +75,7 @@ class Role extends Department {
         this.title = title;
         this.salary = salary;
         this.department_id = department_id;
+        this.connection = connection;
         //soft id evaluation
         if(this.id !== null)
         {
@@ -108,7 +119,7 @@ class Role extends Department {
 }
 
 class Employee extends Role {
-    constructor(id, first_name, last_name, role_id, manager_id)
+    constructor(id, first_name, last_name, role_id, manager_id,connection)
     {
         //initialize role
         super(role_id);
@@ -118,6 +129,7 @@ class Employee extends Role {
         this.last_name = last_name;
         this.role_id = role_id;
         this.manager_id = manager_id;
+        this.connection = connection;
     }
 
     async createEmployee()

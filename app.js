@@ -1,9 +1,11 @@
 //import inquirer package to gather command line information
 const inquirer = require('inquirer');
 //import mysql helper classes
-const dbClasses = require('./Assets/dbClasses');
+const dbClasses = require('./models/dbClasses');
 //import console table
 const cTable = require('console.table');
+//import connection
+const connection = require('./config/connection');
 /*   
     * Add departments, roles, employees
 
@@ -48,27 +50,27 @@ async function displayCMSOptions()
             ]
         }
     ]);
-
+    console.log(answers);
     //evaluate answers
-    /*if(answers.cmsOptions.toUpper() === "VIEW ALL EMPLOYEES")
+    if(answers.cmsOptions.toUpperCase() === "VIEW ALL EMPLOYEES")
     {
         viewEmployees();
-    }else if(answers.cmsOptions.toUpper() === "CREATE EMPLOYEE")
+    }else if(answers.cmsOptions.toUpperCase() === "CREATE EMPLOYEE")
     {
         createEmployee();
-    }else if(answers.cmsOptions.toUpper() === "VIEW ALL ROLES")
+    }else if(answers.cmsOptions.toUpperCase() === "VIEW ALL ROLES")
     {
         viewRoles();
-    }else if(answers.cmsOptions.toUpper() === "CREATE ROLE")
+    }else if(answers.cmsOptions.toUpperCase() === "CREATE ROLE")
     {
         createRole();
-    }else if(answers.cmsOptions.toUpper() === "VIEW ALL DEPARTMENTS")
+    }else if(answers.cmsOptions.toUpperCase() === "VIEW ALL DEPARTMENTS")
     {
         viewDepartments();
-    }else if(answers.cmsOptions.toUpper() === "CREATE DEPARTMENT")
+    }else if(answers.cmsOptions.toUpperCase() === "CREATE DEPARTMENT")
     {
         createDepartment();
-    }*/
+    }
 }
 
 //EMPLOYEES
@@ -215,8 +217,10 @@ async function createRole()
 //DEPARTMENTS
 async function viewDepartments()
 {
+    //create instance of department
+    const department = new dbClasses.Department(null,null,connection);
     //get departments array
-    let departments = await dbClasses.Department().viewAllDepartments();
+    let departments = await department.viewAllDepartments();
     //use console table to print contents of departments
     console.table(departments);
     //redisplay main cms options after displaying all departments
@@ -234,10 +238,11 @@ async function createDepartment()
     //present questions to user
     let answers = await inquirer.prompt(questions);
     //create instance of department
-    let department = dbClasses.Department(null,answers.designation);
+    let department = new dbClasses.Department(null,answers.designation,connection);
     //use instane of employee to create new employee record
-    department.createDepartment();
+    // department.createDepartment();
+    department.seedDepartment();
 }
 
-//on start display the main  options
-//displayCMSOptions();
+//on start setup connection and display the main options
+displayCMSOptions();
