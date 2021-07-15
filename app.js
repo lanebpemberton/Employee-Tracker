@@ -89,6 +89,7 @@ async function displayCMSOptions()
 //EMPLOYEES
 async function viewEmployees()
 {
+    //get instance of employee
     //get employees array
     let employees = await dbClasses.Employee().viewAllEmployees();
     //use console table to print contents of employees
@@ -148,26 +149,13 @@ async function createEmployee()
     employee.createEmployee();
 }
 
-async function deleteEmployee()
-{
-    
-}
-
-async function updateEmployee()
-{
-
-}
-
-async function updateEmployeeRole()
-{
-    
-}
-
 //ROLES
 async function viewRoles()
 {
+    //get instance of roles
+    let role = new dbClasses.Role(null,null,null,null,connection)
     //get roles array
-    let roles = await dbClasses.Role().viewAllRoles();
+    let roles = await role.viewAllRoles();
     //use console table to print all contents
     console.table(roles);
     //redisplay main cms options after printing contents
@@ -204,25 +192,15 @@ async function createRole()
         type:"input",
         message: "Role salary",
     }];
-    //get all departments as an array
-    let departments = await dbClasses.Department().viewAllDepartments();
-    //call map function to create array of strings that are designations
-    let designations = departments.map(departmentObjectToDepartmentString);
-    //push roles to questions array
-    questions.push({
-        name:"designation",
-        type:"list",
-        message: "Assign role to department",
-        choices: designations
-    })
     //present questions to user
     let answers = await inquirer.prompt(questions);
-    //get department id from answers
-    let departmentID = returnMatchingDepartmentID(answers.designation,departments);
     //create instance of role
-    let role = dbClasses.Role(null,answers.title,answers.salary,departmentID);
-    //use instane of employee to create new employee record
-    role.createRole();
+    let role = new dbClasses.Role(null,answers.title,answers.salary,null,connection);
+    //use instance of employee to create new employee record
+    await role.createRole();
+    console.log("Role created successfully!");
+    //redisplay main cms options after displaying all departments
+    displayCMSOptions();
 }
 
 //DEPARTMENTS
@@ -313,7 +291,7 @@ async function updateDepartment()
     let updateDepartmentAnswer = await inquirer.prompt(updatedDepartmentQuestion);
     //write result to update department
     await department.updateDepartment(updateDepartmentAnswer.updatedDepartment,departmentSelected.id);
-    console.log(`Department '${departmentSelected.name}' udpated successfully!`);
+    console.log(`Department '${departmentSelected.name}' updated successfully!`);
     //take user back to main menu
     displayCMSOptions();
 }
@@ -335,3 +313,4 @@ async function startApp()
 }
 
 startApp();
+

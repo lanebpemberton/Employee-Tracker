@@ -18,17 +18,6 @@ class Department {
         }
     }
 
-    async getDepartment()
-    {
-        //use id to retireve rest of department values from mysql
-        connection.query(
-            'SELECT * FROM `table` WHERE `name` = "Page" AND `age` > 45',
-            function(err, results, fields) {
-              console.log(results); // results contains rows returned by server
-            }
-          );
-    }
-
     async createDepartment()
     {
         //create department in mysql
@@ -50,8 +39,7 @@ class Department {
     async viewAllDepartments()
     {
         //view all departments in mysql
-        //use id to retireve rest of department values from mysql
-        const [rows, fields] = await this.connection.execute(`SELECT * FROM \`${this.tableName}\``);
+        const [rows] = await this.connection.execute(`SELECT * FROM \`${this.tableName}\``);
         return rows;
     }
 
@@ -72,6 +60,7 @@ class Role extends Department {
         this.salary = salary;
         this.department_id = department_id;
         this.connection = connection;
+        this.tableName = "role";
         //soft id evaluation
         if(this.id !== null)
         {
@@ -83,34 +72,23 @@ class Role extends Department {
         }
     }
 
-    async getRole()
-    {
-        //get role values from mysql based on id
-
-    }
-
     async createRole()
     {
         //create Role in mysql
-
-        //the result of that function will set this object's id
-    }
-
-    async deleteRole()
-    {
-        //delete Role in mysql
-
-    }
-
-    async updateRole()
-    {
-        //update Role in mysql
+        //create department in mysql
+        const [rows] = await this.connection.execute(`INSERT INTO ${this.tableName} (title,salary) VALUES ('${this.title}','${this.salary}');`);
     }
 
     async viewAllRoles()
     {
         //view all roles in mysql
+        const [rows] = await this.connection.execute(`SELECT * FROM \`${this.tableName}\``);
+        return rows;
+    }
 
+    async seedRole()
+    {
+       await this.connection.execute(`CREATE TABLE ${this.tableName} (title VARCHAR(50),salary decimal,department_id int,id INT AUTO_INCREMENT PRIMARY KEY);`);
     }
 }
 
@@ -126,6 +104,7 @@ class Employee extends Role {
         this.role_id = role_id;
         this.manager_id = manager_id;
         this.connection = connection;
+        this.tableName = "employee";
     }
 
     async createEmployee()
@@ -149,9 +128,8 @@ class Employee extends Role {
     async viewAllEmployees()
     {
         //return all employees in mysql
-
-        //return array of objects
-
+        const [rows] = await this.connection.execute(`SELECT * FROM \`${this.tableName}\``);
+        return rows;
     }
 }
 
