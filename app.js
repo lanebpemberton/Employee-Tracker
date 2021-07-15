@@ -39,11 +39,10 @@ async function displayCMSOptions()
             [
                 "View all employees",
                 "Create employee",
-                "Update employee",
+                "Update employee role",
                 "Delete employee",
                 "View all roles",
                 "Create role",
-                "Update role",
                 "Delete role",
                 "View all departments",
                 "Create department",
@@ -60,7 +59,14 @@ async function displayCMSOptions()
     }else if(answers.cmsOptions.toUpperCase() === "CREATE EMPLOYEE")
     {
         createEmployee();
-    }else if(answers.cmsOptions.toUpperCase() === "VIEW ALL ROLES")
+    }else if(answers.cmsOptions.toUpperCase() === "UPDATE EMPLOYEE")
+    {
+        updateEmployee();
+    }else if(answers.cmsOptions.toUpperCase() === "DELETE EMPLOYEE")
+    {
+        deleteEmployee();
+    }
+    else if(answers.cmsOptions.toUpperCase() === "VIEW ALL ROLES")
     {
         viewRoles();
     }else if(answers.cmsOptions.toUpperCase() === "CREATE ROLE")
@@ -72,6 +78,12 @@ async function displayCMSOptions()
     }else if(answers.cmsOptions.toUpperCase() === "CREATE DEPARTMENT")
     {
         createDepartment();
+    }else if(answers.cmsOptions.toUpperCase() === "DELETE DEPARTMENT")
+    {
+        deleteDepartment();
+    }else if(answers.cmsOptions.toUpperCase() === "UPDATE DEPARTMENT")
+    {
+        updateDepartment();
     }
 }
 
@@ -140,10 +152,10 @@ async function createEmployee()
 
 async function deleteEmployee()
 {
-
+    
 }
 
-async function updateEmployeeName()
+async function updateEmployee()
 {
 
 }
@@ -247,6 +259,55 @@ async function createDepartment()
     console.log(`Department '${answers.designation}' created successfully!`);
     //point the user back to main options
     displayCMSOptions();
+}
+
+async function deleteDepartment()
+{
+
+}
+
+async function updateDepartment()
+{
+    let department = new dbClasses.Department(null,null,connection);
+    //get departments to list
+    let departments = await department.viewAllDepartments();
+    //setup questions to show user
+    let chooseDepartmentQuestion = [
+        {
+            name:"department",
+            type: "list",
+            message: "Choose a department to update",
+            choices: departments
+        }
+    ];
+    //get answer from user
+    let departmentAnswer = await inquirer.prompt(chooseDepartmentQuestion);
+    //get whole object of chosen answer from initial list
+    let departmentSelected = departments.filter(returnIDFromArray,departmentAnswer.department)[0];
+    //ask user to rename department
+    let updatedDepartmentQuestion = [
+        {
+            name:"updatedDepartment",
+            type:"input",
+            message:`Enter a new name for the department: '${departmentAnswer.department}'`
+        }
+    ]
+    //present question to user
+    let updateDepartmentAnswer = await inquirer.prompt(updatedDepartmentQuestion);
+    //write result to update department
+    await department.updateDepartment(updateDepartmentAnswer.updatedDepartment,departmentSelected.id);
+    console.log(`Department '${departmentSelected.name}' udpated successfully!`);
+    //take user back to main menu
+    displayCMSOptions();
+}
+
+function returnIDFromArray(arrayValue)
+{
+    if(arrayValue.name == this)
+    {
+        return true
+    }
+    return false;
 }
 
 //on start setup connection and display the main options
