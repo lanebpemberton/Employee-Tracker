@@ -110,19 +110,7 @@ class Employee extends Role {
     async createEmployee()
     {
         //create Employee in mysql
-
-        //the result of that function will set this object's id
-    }
-
-    async deleteEmployee()
-    {
-        //delete Employee in mysql
-
-    }
-
-    async updateEmployee()
-    {
-        //update Employee in mysql
+        const [rows] = await this.connection.execute(`INSERT INTO ${this.tableName} (first_name,last_name) VALUES ('${this.first_name}','${this.last_name}');`);
     }
 
     async viewAllEmployees()
@@ -130,6 +118,11 @@ class Employee extends Role {
         //return all employees in mysql
         const [rows] = await this.connection.execute(`SELECT * FROM \`${this.tableName}\``);
         return rows;
+    }
+
+    async seedEmployee()
+    {
+       let [rows] = await this.connection.execute(`CREATE TABLE ${this.tableName} (first_name VARCHAR(50),last_name VARCHAR(50),role_id int,manager_id int,id INT AUTO_INCREMENT PRIMARY KEY);`);
     }
 }
 

@@ -8,24 +8,6 @@ const cTable = require('console.table');
 const mysqlConnection = require('./config/connection');
 //setup global connection variable
 let connection = null;
-/*   
-    * Add departments, roles, employees
-
-    * View departments, roles, employees
-
-    * Update employee roles
-
-## Bonus
-
-    * The command-line application should allow users to:
-
-    * Update employee managers
-
-    * View employees by manager
-
-    * Delete departments, roles, and employees
-
-    * View the total utilized budget of a department -- ie the combined salaries of all employees in that department */
 
 async function displayCMSOptions()
 {
@@ -39,11 +21,8 @@ async function displayCMSOptions()
             [
                 "View all employees",
                 "Create employee",
-                "Update employee role",
-                "Delete employee",
                 "View all roles",
                 "Create role",
-                "Delete role",
                 "View all departments",
                 "Create department",
                 "Update department",
@@ -58,14 +37,7 @@ async function displayCMSOptions()
     }else if(answers.cmsOptions.toUpperCase() === "CREATE EMPLOYEE")
     {
         createEmployee();
-    }else if(answers.cmsOptions.toUpperCase() === "UPDATE EMPLOYEE")
-    {
-        updateEmployee();
-    }else if(answers.cmsOptions.toUpperCase() === "DELETE EMPLOYEE")
-    {
-        deleteEmployee();
-    }
-    else if(answers.cmsOptions.toUpperCase() === "VIEW ALL ROLES")
+    }else if(answers.cmsOptions.toUpperCase() === "VIEW ALL ROLES")
     {
         viewRoles();
     }else if(answers.cmsOptions.toUpperCase() === "CREATE ROLE")
@@ -90,8 +62,9 @@ async function displayCMSOptions()
 async function viewEmployees()
 {
     //get instance of employee
-    //get employees array
-    let employees = await dbClasses.Employee().viewAllEmployees();
+    let employee = new dbClasses.Employee(null,null,null,null,null,connection);
+    //get array of employees
+    let employees = await employee.viewAllEmployees();
     //use console table to print contents of employees
     console.table(employees);
     //redisplay main cms options after displaying all employees
@@ -128,25 +101,14 @@ async function createEmployee()
         type:"input",
         message: "Employee last name",
     }];
-    //get all roles as an array
-    let roles = await dbClasses.Role().viewAllRoles();
-    //call map function to create array of strings that are role titles
-    let roleTitles = roles.map(roleObjectToRoleString);
-    //push roles to questions array
-    questions.push({
-        name:"role",
-        type:"list",
-        message: "Assign employee role",
-        choices: roleTitles
-    })
     //present questions to user
     let answers = await inquirer.prompt(questions);
-    //get role id from answers
-    let roleID = returnMatchingRoleID(answers.role,roles);
     //create instance of employee
-    let employee = dbClasses.Employee(null,answers.firstName,answers.lastName,roleID);
+    let employee = new dbClasses.Employee(null,answers.firstName,answers.lastName,null,null,connection);
     //use instane of employee to create new employee record
-    employee.createEmployee();
+    await employee.createEmployee();
+    //redisplay main cms options after printing contents
+    displayCMSOptions();
 }
 
 //ROLES
@@ -310,6 +272,8 @@ async function startApp()
 {
     connection = await mysqlConnection.setup();
     displayCMSOptions();
+    // let employee = new dbClasses.Employee(null,null,null,null,null,connection);
+    // await employee.seedEmployee();
 }
 
 startApp();
