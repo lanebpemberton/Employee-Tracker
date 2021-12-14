@@ -1,5 +1,3 @@
-const { connect } = require("../config/connection");
-
 class Department {
     constructor(id, designation, connection)
     {

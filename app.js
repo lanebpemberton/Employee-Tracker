@@ -272,8 +272,6 @@ async function startApp()
 {
     connection = await mysqlConnection.setup();
     displayCMSOptions();
-    // let employee = new dbClasses.Employee(null,null,null,null,null,connection);
-    // await employee.seedEmployee();
 }
 
 startApp();
